@@ -69,8 +69,12 @@ for i = 1:length(patients)
     %optimizer.MaximumStepLength = 0.0625;
     %optimizer.MaximumIterations = 2;
     %optimizer.RelaxationFactor = 0.1;
-    f19_MOVING = imregister(uint8(moving), uint8(fixed), 'translation', optimizer, metric);
-
+    
+    
+    f19_MOVING = imregister(uint8(moving), uint8(fixed), 'affine', optimizer, metric);
+    
+    tform = imregtform(uint8(moving), uint8(fixed), 'affine', optimizer, metric);
+    
     %% Plot Registered Results
     figure(1);clf
     plot_title = sprintf('Subject %i', patients(i));
