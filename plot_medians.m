@@ -19,6 +19,11 @@ patientNumbers = [2; 3; 4; 5; 11; 15; 16; 17; 19; 21; 26];
 first_PFP      = [2; 1; 2; 2;  2;  2;  2;  2;  2;  2;  2];
 last_PFP       = [7; 5; 7; 7;  6;  7;  6;  6;  6;  6;  6]; % updated 3/9/2018
 
+
+%% Start timer
+tic
+
+%% Loop patients to get medians data
 for i=1:length(patientNumbers)
     %% Load Medians Data
     cd('./medians1')
@@ -41,6 +46,9 @@ for i=1:length(patientNumbers)
     LLL_washout(i,:) = LLL_median_vals(last_PFP(i):last_PFP(i)+4);
     
 end
+
+%% Change directory to plots
+cd('./plots')
 
 %% Make Lobar mean washin plot
 figure(1);clf
@@ -234,8 +242,162 @@ ylabel('Median Lobar Intensity')
 title('Plot of F19 Median Lobe Intensity in LUL for Contrast Wash-in')
 print('LLL_washin','-dpng','-r0')
 
+%% Make RUL plot for each patient
+figure(8);clf
 
+plot(RUL_washout(1,:),  'k-')
+hold on
+plot(RUL_washout(2,:),  'm-')
+hold on
+plot(RUL_washout(3,:),  'c-')
+hold on
+plot(RUL_washout(4,:),  'r-')
+hold on
+plot(RUL_washout(5,:),  'g-')
+hold on
+plot(RUL_washout(6,:),  'b-')
+hold on
+plot(RUL_washout(7,:),  'w-')
+hold on
+plot(RUL_washout(8,:),  'k-')
+hold on
+plot(RUL_washout(9,:),  'y-')
+hold on
+plot(RUL_washout(10,:), 'm-')
+hold on
+plot(RUL_washout(11,:), 'c-')
 
+legend('002','003','004','005','011','015','016','017','019','021','026')
+xlabel('Timestep')
+ylabel('Median Lobar Intensity')
+title('Plot of F19 Median Lobe Intensity in RUL for Contrast Wash-out')
+print('RUL_washout','-dpng','-r0')
 
-%% Print Elapsed Processing Time
+%% Make RML plot for each patient
+figure(9);clf
+
+plot(RML_washout(1,:),  'k-')
+hold on
+plot(RML_washout(2,:),  'm-')
+hold on
+plot(RML_washout(3,:),  'c-')
+hold on
+plot(RML_washout(4,:),  'r-')
+hold on
+plot(RML_washout(5,:),  'g-')
+hold on
+plot(RML_washout(6,:),  'b-')
+hold on
+plot(RML_washout(7,:),  'w-')
+hold on
+plot(RML_washout(8,:),  'k-')
+hold on
+plot(RML_washout(9,:),  'y-')
+hold on
+plot(RML_washout(10,:), 'm-')
+hold on
+plot(RML_washout(11,:), 'c-')
+
+legend('002','003','004','005','011','015','016','017','019','021','026')
+xlabel('Timestep')
+ylabel('Median Lobar Intensity')
+title('Plot of F19 Median Lobe Intensity in RML for Contrast Wash-out')
+print('RML_washout','-dpng','-r0')
+
+%% Make RLL plot for each patient
+figure(10);clf
+
+plot(RLL_washout(1,:),  'k-')
+hold on
+plot(RLL_washout(2,:),  'm-')
+hold on
+plot(RLL_washout(3,:),  'c-')
+hold on
+plot(RLL_washout(4,:),  'r-')
+hold on
+plot(RLL_washout(5,:),  'g-')
+hold on
+plot(RLL_washout(6,:),  'b-')
+hold on
+plot(RLL_washout(7,:),  'w-')
+hold on
+plot(RLL_washout(8,:),  'k-')
+hold on
+plot(RLL_washout(9,:),  'y-')
+hold on
+plot(RLL_washout(10,:), 'm-')
+hold on
+plot(RLL_washout(11,:), 'c-')
+
+legend('002','003','004','005','011','015','016','017','019','021','026')
+xlabel('Timestep')
+ylabel('Median Lobar Intensity')
+title('Plot of F19 Median Lobe Intensity in RLL for Contrast Wash-out')
+print('RLL_washout','-dpng','-r0')
+
+%% Make LUL plot for each patient
+figure(11);clf
+
+plot(LUL_washout(1,:),  'k-')
+hold on
+plot(LUL_washout(2,:),  'm-')
+hold on
+plot(LUL_washout(3,:),  'c-')
+hold on
+plot(LUL_washout(4,:),  'r-')
+hold on
+plot(LUL_washout(5,:),  'g-')
+hold on
+plot(LUL_washout(6,:),  'b-')
+hold on
+plot(LUL_washout(7,:),  'w-')
+hold on
+plot(LUL_washout(8,:),  'k-')
+hold on
+plot(LUL_washout(9,:),  'y-')
+hold on
+plot(LUL_washout(10,:), 'm-')
+hold on
+plot(LUL_washout(11,:), 'c-')
+
+legend('002','003','004','005','011','015','016','017','019','021','026')
+xlabel('Timestep')
+ylabel('Median Lobar Intensity')
+title('Plot of F19 Median Lobe Intensity in LUL for Contrast Wash-out')
+print('LUL_washout','-dpng','-r0')
+
+%% Make LLL plot for each patient
+figure(12);clf
+
+plot(LLL_washout(1,:),  'k-')
+hold on
+plot(LLL_washout(2,:),  'm-')
+hold on
+plot(LLL_washout(3,:),  'c-')
+hold on
+plot(LLL_washout(4,:),  'r-')
+hold on
+plot(LLL_washout(5,:),  'g-')
+hold on
+plot(LLL_washout(6,:),  'b-')
+hold on
+plot(LLL_washout(7,:),  'w-')
+hold on
+plot(LLL_washout(8,:),  'k-')
+hold on
+plot(LLL_washout(9,:),  'y-')
+hold on
+plot(LLL_washout(10,:), 'm-')
+hold on
+plot(LLL_washout(11,:), 'c-')
+
+legend('002','003','004','005','011','015','016','017','019','021','026')
+xlabel('Timestep')
+ylabel('Median Lobar Intensity')
+title('Plot of F19 Median Lobe Intensity in LUL for Contrast Wash-out')
+print('LLL_washout','-dpng','-r0')
+
+%% Change directory home and Print Elapsed Processing Time
+cd(home)
 toc
+close all
