@@ -13,7 +13,7 @@ first_PFP      = [2; 1; 2; 2; 1; 2; 2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  
 last_PFP       = [7; 5; 7; 7; 7; 7; 6;  6;  6;  7;  6;  5;  7;  6;  6;  7;  6;  6;  6;  6;  4;  6]; % updated 11/11/2017
 
 all = [2;3;4;5;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;24;25];
-normals = [2;3;4;5;11;15;16;17;19;21];
+normals = [2;3;4;5;11;15;16;17;19;21;26];
 mild = [9;10;13;18;20;24;25];
 moderate = [7;8;12;14;22];
 
@@ -26,7 +26,7 @@ anatomic_slice_thickness = 1.5; % cm
 %% Loop Through all F19 Patients
 tic
 
-patientNumbers = [25]; % edit this
+patientNumbers = [26]; % edit this
 
 for i=1:length(patientNumbers)
     %% Load F19 Ventilation Data
