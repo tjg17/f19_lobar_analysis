@@ -30,7 +30,7 @@ patientNumbers = [25]; % edit this
 
 for i=1:length(patientNumbers)
     %% Load F19 Ventilation Data
-    cd('G:\2017-Glass\mim\f19_ventilation_segmentations')
+    cd('./data/f19_ventilation_segmentations')
     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
     load(filename);
     moving = imresize(roi,[128,128]); % f19 is moving
@@ -39,7 +39,7 @@ for i=1:length(patientNumbers)
     cd(home)
 
     %% Load Anatomic MRI and Lobar Segmentations
-    cd('G:\2017-Glass\mim\inspiration_lobar_segmentations')
+    cd('./data/inspiration_lobar_segmentations')
     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
     load(filename)
     fixed = imresize(WholeLung, [128,128]); % anat is fixed
