@@ -26,7 +26,7 @@ anatomic_slice_thickness = 1.5; % cm
 %% Loop Through all F19 Patients
 tic
 
-patientNumbers = [2]; % edit this
+patientNumbers = [25]; % edit this
 
 for i=1:length(patientNumbers)
     %% Load F19 Ventilation Data
@@ -44,58 +44,129 @@ for i=1:length(patientNumbers)
     load(filename)
     fixed = imresize(WholeLung, [128,128]); % anat is fixed
     fixed(:,:,16:18) = 0; % make fixed the same size as moving functional
+    
+    % load anatomic MRI
     inspirationMRI = MR1;
+    inspirationMRI(:,:,16:18) = 0;
+    % load lobar segs
     LeftLowerLobeSegs(:,:,:,i) = LeftLowerLobe;
     LeftUpperLobeSegs(:,:,:,i) = LeftUpperLobe;
     RightLowerLobeSegs(:,:,:,i) = RightLowerLobe;
     RightMiddleLobeSegs(:,:,:,i) = RightMiddleLobe;
     RightUpperLobeSegs(:,:,:,i) = RightUpperLobe;
+    % make lobar segs same size as image
+    LeftLowerLobe   = imresize(LeftLowerLobe, [128,128]);
+    LeftUpperLobe   = imresize(LeftUpperLobe, [128,128]);
+    RightLowerLobe  = imresize(RightLowerLobe, [128,128]);
+    RightMiddleLobe = imresize(RightMiddleLobe, [128,128]);
+    RightUpperLobe  = imresize(RightUpperLobe, [128,128]);
+    % make lobar segs same size as moving functional
+    LeftLowerLobe(:,:,16:18) = 0;
+    LeftUpperLobe(:,:,16:18) = 0;
+    RightLowerLobe(:,:,16:18) = 0;
+    RightMiddleLobe(:,:,16:18) = 0;
+    RightUpperLobe(:,:,16:18) = 0;
+    
     cd(home)
     
-    %% Stretch F19 Ventilation Segmentation for ApexBase and PosteriorAnterior Changes
-    movingABstretch = Stretch_F19_ApexBase(moving,fixed);
+    %figure(2);clf
+    %imshow(int16(fixed(:,:,8)).*inspirationMRI(:,:,8),[])
     
-    %% Register F19 Moving to Inspiration 1H Fixed
+    %% Get Transform by Registering F19 Moving map to Inspiration 1H Fixed
     [optimizer, metric] = imregconfig('monomodal');
-    f19_MOVING = imregister(uint8(moving), uint8(fixed), 'affine', optimizer, metric);
-      
-    %% Plot Registered Results
-    figure(1);clf
-    plot_title = sprintf('Subject %i', patientNumbers(i));
+    tform = imregtform(uint8(moving), uint8(fixed), 'affine', optimizer, metric);
 
-    subplot(4,4,1)
-    imshowpair(fixed(:,:,2), f19_MOVING(:,:,2),'Scaling','joint');
-    title(plot_title)
-    subplot(4,4,2)    
-    imshowpair(fixed(:,:,3), f19_MOVING(:,:,3),'Scaling','joint');
-    subplot(4,4,3)    
-    imshowpair(fixed(:,:,4), f19_MOVING(:,:,4),'Scaling','joint');
-    subplot(4,4,4)
-    imshowpair(fixed(:,:,5), f19_MOVING(:,:,5),'Scaling','joint');
-    subplot(4,4,5)
-    imshowpair(fixed(:,:,6), f19_MOVING(:,:,6),'Scaling','joint');
-    subplot(4,4,6)
-    imshowpair(fixed(:,:,7), f19_MOVING(:,:,7),'Scaling','joint');
-    subplot(4,4,7)
-    imshowpair(fixed(:,:,8), f19_MOVING(:,:,8),'Scaling','joint');
-    subplot(4,4,8)
-    imshowpair(fixed(:,:,9), f19_MOVING(:,:,9),'Scaling','joint');
-    subplot(4,4,9)
-    imshowpair(fixed(:,:,10), f19_MOVING(:,:,10),'Scaling','joint');
-    subplot(4,4,10)
-    imshowpair(fixed(:,:,11), f19_MOVING(:,:,11),'Scaling','joint');
-    subplot(4,4,11)
-    imshowpair(fixed(:,:,12), f19_MOVING(:,:,12),'Scaling','joint');
-    subplot(4,4,12)
-    imshowpair(fixed(:,:,13), f19_MOVING(:,:,13),'Scaling','joint');
-    subplot(4,4,13)
-    imshowpair(fixed(:,:,14), f19_MOVING(:,:,14),'Scaling','joint');
-    subplot(4,4,14)
-    imshowpair(fixed(:,:,15), f19_MOVING(:,:,15),'Scaling','joint');
-    subplot(4,4,15)
-    imshowpair(fixed(:,:,16), f19_MOVING(:,:,16),'Scaling','joint');
-    subplot(4,4,16)
-    imshowpair(fixed(:,:,17), f19_MOVING(:,:,17),'Scaling','joint'); 
+    
+    %% Create 4D transformed F19 image with tform
+    for timestep = 1:size(f19,4)
+        moving_f19 = imresize(f19(:,:,:,timestep),[128 128]);
+        f19_registered(:,:,:,timestep) = imwarp(moving_f19, tform , 'OutputView', imref3d(size(fixed)));
+    end
+    
+    %% Show figure to confirm registration
+    figure(1);clf
+    f19_timestep = 5;
+    slice1 = 4;
+    slice2 = 6;
+    slice3 = 8;
+    slice4 = 10;
+    slice5 = 12;
+    subplot(5,4,1)
+    imshow(f19_registered(:,:,slice1,f19_timestep),[])
+    subplot(5,4,2)
+    imshow(inspirationMRI(:,:,slice1),[])
+    subplot(5,4,3)
+    imshow(RightLowerLobe(:,:,slice1),[])
+    subplot(5,4,4)
+    imshow(LeftUpperLobe(:,:,slice1),[])
+    subplot(5,4,5)
+    imshow(f19_registered(:,:,slice2,f19_timestep),[])
+    subplot(5,4,6)
+    imshow(inspirationMRI(:,:,slice2),[])
+    subplot(5,4,7)
+    imshow(RightLowerLobe(:,:,slice2),[])
+    subplot(5,4,8)
+    imshow(LeftUpperLobe(:,:,slice2),[])
+    subplot(5,4,9)
+    imshow(f19_registered(:,:,slice3,f19_timestep),[])
+    subplot(5,4,10)
+    imshow(inspirationMRI(:,:,slice3),[])
+    subplot(5,4,11)
+    imshow(RightLowerLobe(:,:,slice3),[])
+    subplot(5,4,12)
+    imshow(LeftUpperLobe(:,:,slice3),[])
+    subplot(5,4,13)
+    imshow(f19_registered(:,:,slice4,f19_timestep),[])
+    subplot(5,4,14)
+    imshow(inspirationMRI(:,:,slice4),[])
+    subplot(5,4,15)
+    imshow(RightLowerLobe(:,:,slice4),[])
+    subplot(5,4,16)
+    imshow(LeftUpperLobe(:,:,slice4),[])
+    subplot(5,4,17)
+    imshow(f19_registered(:,:,slice5,f19_timestep),[])
+    subplot(5,4,18)
+    imshow(inspirationMRI(:,:,slice5),[])
+    subplot(5,4,19)
+    imshow(RightLowerLobe(:,:,slice5),[])
+    subplot(5,4,20)
+    imshow(LeftUpperLobe(:,:,slice5),[])
+    
+    %% Grab whole lung and lobes in time that are in anatomic segmentation
+    for timestep = 1:size(f19,4)
+        WholeLung_ventilated(:,:,:,timestep) = fixed .* f19_registered(:,:,:,timestep);
+        
+        RUL_ventilated(:,:,:,timestep) = RightUpperLobe  .* f19_registered(:,:,:,timestep);
+        RML_ventilated(:,:,:,timestep) = RightMiddleLobe .* f19_registered(:,:,:,timestep);
+        RLL_ventilated(:,:,:,timestep) = RightLowerLobe  .* f19_registered(:,:,:,timestep);
+        LUL_ventilated(:,:,:,timestep) = LeftUpperLobe   .* f19_registered(:,:,:,timestep);
+        LLL_ventilated(:,:,:,timestep) = LeftLowerLobe   .* f19_registered(:,:,:,timestep);   
+    end
+    
+    %% Find median of lobe at each timepoint
+    for timestep = 1:size(f19,4)
+        RUL_median_vals(timestep) = ComputeMedianOfLobe(RUL_ventilated(:,:,:,timestep));
+        RML_median_vals(timestep) = ComputeMedianOfLobe(RML_ventilated(:,:,:,timestep));
+        RLL_median_vals(timestep) = ComputeMedianOfLobe(RLL_ventilated(:,:,:,timestep));
+        LUL_median_vals(timestep) = ComputeMedianOfLobe(LUL_ventilated(:,:,:,timestep));
+        LLL_median_vals(timestep) = ComputeMedianOfLobe(LLL_ventilated(:,:,:,timestep));
+        
+    end
+    
+    %% Plot lobar medians on one plot
+    figure(3);clf
+    plot(RUL_median_vals, 'g*-')
+    hold on
+    plot(RML_median_vals, 'b*-')
+    hold on
+    plot(RLL_median_vals, 'r*-')
+    hold on
+    plot(LUL_median_vals, 'm*-')
+    hold on
+    plot(LLL_median_vals, 'k*-')
+    hold on
+    legend('RUL','RML','RLL','LUL','LLL')
+    
     
 end
 

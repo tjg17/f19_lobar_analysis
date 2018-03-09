@@ -24,3 +24,4 @@ hs_err_pid*
 *.xlsx
 *.docx
 data/f19_ventilation_segmentations/scratch.m
+*.asv
