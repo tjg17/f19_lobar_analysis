@@ -7,15 +7,9 @@ clear; clc; close all
 home = pwd;
 addpath('./functions') % Add path for f19 processing functions
 
-%% Data for First and Last PFP Times
-patientNumbers = [2; 3; 4; 5; 7; 8; 9; 10; 11; 12; 13; 14; 15; 16; 17; 18; 19; 20; 21; 22; 24; 25];
-first_PFP      = [2; 1; 2; 2; 1; 2; 2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2;  2];
-last_PFP       = [7; 5; 7; 7; 7; 7; 6;  6;  6;  7;  6;  5;  7;  6;  6;  7;  6;  6;  6;  6;  4;  6]; % updated 11/11/2017
-
-all = [2;3;4;5;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;24;25];
-normals = [2;3;4;5;11;15;16;17;19;21;26];
-mild = [9;10;13;18;20;24;25];
-moderate = [7;8;12;14;22];
+%% Select Patient Numbers
+normals = [2;3;4;5;15;16;17;26;31;37;39;40];
+patientNumbers = 39;
 
 %% Selected Image Data
 f19_pixel_size = 0.625; % cm
@@ -24,19 +18,15 @@ anatomic_pixel_size = 0.3125; % cm
 anatomic_slice_thickness = 1.5; % cm
 
 %% Loop Through all F19 Patients
-tic
-
-patientNumbers = [26]; % edit this
-
 for i=1:length(patientNumbers)
     %% Load F19 Ventilation Data
-    cd('./data/f19_ventilation_segmentations')
-    filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
-    load(filename);
-    moving = imresize(roi,[128,128]); % f19 is moving
-    f19 = image;
-    ventilation = roi;
-    cd(home)
+%     cd('./data/f19_ventilation_segmentations')
+%     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
+%     load(filename);
+%     moving = imresize(roi,[128,128]); % f19 is moving
+%     f19 = image;
+%     ventilation = roi;
+%     cd(home)
 
     %% Load Anatomic MRI and Lobar Segmentations
     cd('./data/inspiration_lobar_segmentations')
