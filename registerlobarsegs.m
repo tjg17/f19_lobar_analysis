@@ -19,21 +19,22 @@ anatomic_slice_thickness = 1.5; % cm
 
 %% Loop Through all F19 Patients
 for i=1:length(patientNumbers)
+    
     %% Load F19 Ventilation Data
-%     cd('./data/f19_ventilation_segmentations')
-%     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
-%     load(filename);
-%     moving = imresize(roi,[128,128]); % f19 is moving
-%     f19 = image;
-%     ventilation = roi;
-%     cd(home)
+    cd('./data/f19_ventilation_segmentations')
+    filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
+    load(filename);
+    fixed = imresize(roi,[128,128]); % f19 is fixed
+    f19 = image;
+    ventilation = roi;
+    cd(home)
 
     %% Load Anatomic MRI and Lobar Segmentations
     cd('./data/inspiration_lobar_segmentations')
     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
     load(filename)
-    fixed = imresize(WholeLung, [128,128]); % anat is fixed
-    fixed(:,:,16:18) = 0; % make fixed the same size as moving functional
+    moving = imresize(WholeLung, [128,128]); % anat is moving
+    moving(:,:,16:18) = 0; % make moving anat the same size as fixed functional
     
     % load anatomic MRI
     inspirationMRI = MR1;
@@ -50,7 +51,7 @@ for i=1:length(patientNumbers)
     RightLowerLobe  = imresize(RightLowerLobe, [128,128]);
     RightMiddleLobe = imresize(RightMiddleLobe, [128,128]);
     RightUpperLobe  = imresize(RightUpperLobe, [128,128]);
-    % make lobar segs same size as moving functional
+    % make lobar segs same size as fixed functional
     LeftLowerLobe(:,:,16:18) = 0;
     LeftUpperLobe(:,:,16:18) = 0;
     RightLowerLobe(:,:,16:18) = 0;
@@ -59,15 +60,20 @@ for i=1:length(patientNumbers)
     
     cd(home)
     
-    %figure(2);clf
-    %imshow(int16(fixed(:,:,8)).*inspirationMRI(:,:,8),[])
-    
-    %% Get Transform by Registering F19 Moving map to Inspiration 1H Fixed
+    %% Compute Transform by Registering 1h whole lung seg to f19 seg
     [optimizer, metric] = imregconfig('monomodal');
     tform = imregtform(uint8(moving), uint8(fixed), 'affine', optimizer, metric);
 
+     %% Use imwarp to apply transform to 1H data
+    inspirationMRI_t = imwarp(inspirationMRI,    tform, 'OutputView', imref3d(size(fixed)));
+    WholeLung_t = imwarp(moving,    tform, 'OutputView', imref3d(size(fixed)));
+    LLL_t = imwarp(LeftLowerLobe,   tform, 'OutputView', imref3d(size(fixed)));
+    LUL_t = imwarp(LeftUpperLobe,   tform, 'OutputView', imref3d(size(fixed)));
+    RLL_t = imwarp(RightLowerLobe,  tform, 'OutputView', imref3d(size(fixed)));
+    RML_t = imwarp(RightMiddleLobe, tform, 'OutputView', imref3d(size(fixed)));
+    RUL_t = imwarp(RightUpperLobe,  tform, 'OutputView', imref3d(size(fixed)));
     
-    %% Create 4D transformed F19 image with tform
+    
     for timestep = 1:size(f19,4)
         moving_f19 = imresize(f19(:,:,:,timestep),[128 128]);
         f19_registered(:,:,:,timestep) = imwarp(moving_f19, tform , 'OutputView', imref3d(size(fixed)));
@@ -159,6 +165,3 @@ for i=1:length(patientNumbers)
     
     
 end
-
-%% Print Elapsed Processing Time
-toc
