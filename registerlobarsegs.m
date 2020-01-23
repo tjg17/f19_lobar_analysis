@@ -89,7 +89,7 @@ for i=1:length(patientNumbers)
     
     subplot(5,5,1)
     imshow(fixed(:,:,slice1),[])
-    title('f19 seg')
+    title(strcat('f19 seg - ' , string(patientNumbers(i))))
     subplot(5,5,2)
     imshow(WholeLung_t(:,:,slice1),[])
     title('1h seg')
@@ -146,6 +146,7 @@ for i=1:length(patientNumbers)
     imshow(RLL_t(:,:,slice5),[])
     subplot(5,5,25)
     imshow(LUL_t(:,:,slice5),[])
+    
         
     
 end
