@@ -19,16 +19,7 @@ anatomic_slice_thickness = 1.5; % cm
 
 %% Loop Through all F19 Patients
 for i=1:length(patientNumbers)
-    
-%     %% Load F19 Ventilation Data
-%     cd('./data/f19_ventilation_segmentations')
-%     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
-%     load(filename);
-%     fixed = imresize(roi,[128,128]); % fixed = f19
-%     f19 = image;
-%     ventilation = roi;
-%     cd(home)
-    
+       
     %% Load f19 ventilation data
     cd('.\data\f19_ventilation_nomotioncorrection')
     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'_19F_nm.mat');
@@ -160,8 +151,22 @@ for i=1:length(patientNumbers)
     imshow(RLL_t(:,:,slice5),[])
     subplot(5,5,25)
     imshow(LUL_t(:,:,slice5),[])
-    pause(1)
     
-        
+    % Save Figure of Registration Results
+    FigureDirectory    = strcat('.\outputs\registrationresultfigures\');
+    FigureName = strcat('RegistrationResults_Patient_',string(patientNumbers(i)));
+    FileName = char(strcat(FigureDirectory,FigureName,'.png'));
+    saveas(gcf,FileName)
+    
+    % Save registered lobar segmentations
+    TransformedSegs{1} = WholeLung_t;
+    TransformedSegs{2} = LLL_t;
+    TransformedSegs{3} = LUL_t;
+    TransformedSegs{4} = RLL_t;
+    TransformedSegs{5} = RML_t;
+    TransformedSegs{6} = RUL_t;
+    FigureDirectory    = strcat('.\outputs\registeredlobarsegs\');
+    FileName = strcat(FigureDirectory, '0509-',num2str(patientNumbers(i),'%03d'),'_registeredlobes');
+    save(FileName, 'TransformedSegs');
     
 end
