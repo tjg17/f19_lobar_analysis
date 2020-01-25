@@ -9,7 +9,7 @@ addpath('./functions') % Add path for f19 processing functions
 
 %% Select Patient Numbers
 normals = [2;3;4;5;15;16;17;19;26;31;37;39;40];
-patientNumbers = 5;
+patientNumbers = normals;
 
 %% Selected Image Data
 f19_pixel_size = 0.625; % cm
@@ -20,13 +20,27 @@ anatomic_slice_thickness = 1.5; % cm
 %% Loop Through all F19 Patients
 for i=1:length(patientNumbers)
     
-    %% Load F19 Ventilation Data
-    cd('./data/f19_ventilation_segmentations')
-    filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
-    load(filename);
-    fixed = imresize(roi,[128,128]); % fixed = f19
-    f19 = image;
-    ventilation = roi;
+%     %% Load F19 Ventilation Data
+%     cd('./data/f19_ventilation_segmentations')
+%     filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'.mat');
+%     load(filename);
+%     fixed = imresize(roi,[128,128]); % fixed = f19
+%     f19 = image;
+%     ventilation = roi;
+%     cd(home)
+    
+    %% Load f19 ventilation data
+    cd('.\data\f19_ventilation_nomotioncorrection')
+    filename = strcat('0509-',num2str(patientNumbers(i),'%03d'),'_19F_nm.mat');
+    F19_MIM_data = load(filename);
+    f19_RAW = F19_MIM_data.image;
+    cd(home)
+        
+    %% Load slicer anatomic segs
+    cd('.\data\anatomic_slicer_segmentations')
+    filename = strcat('Segmentation-label_',num2str(patientNumbers(i),'%03d'),'.nrrd');
+    slicerseg = nrrdread(filename);
+    fixed = logical(slicerseg); % f19 is fixed
     cd(home)
 
     %% Load Anatomic MRI and Lobar Segmentations
@@ -146,6 +160,7 @@ for i=1:length(patientNumbers)
     imshow(RLL_t(:,:,slice5),[])
     subplot(5,5,25)
     imshow(LUL_t(:,:,slice5),[])
+    pause(1)
     
         
     
