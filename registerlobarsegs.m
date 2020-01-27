@@ -152,6 +152,16 @@ for i=1:length(patientNumbers)
     subplot(5,5,25)
     imshow(LUL_t(:,:,slice5),[])
     
+    %% Apply transformed segs to F19 segs
+    WholeLung_f19 = WholeLung_t .* fixed;
+    LLL_f19 = LLL_t .* fixed;
+    LUL_f19 = LUL_t .* fixed;
+    RLL_f19 = RLL_t .* fixed;
+    RML_f19 = RML_t .* fixed;
+    RUL_f19 = RUL_t .* fixed;
+    
+    %% Save Outputs
+ 
     % Save Figure of Registration Results
     FigureDirectory    = strcat('.\outputs\registrationresultfigures\');
     FigureName = strcat('RegistrationResults_Patient_',string(patientNumbers(i)));
@@ -168,5 +178,16 @@ for i=1:length(patientNumbers)
     FigureDirectory    = strcat('.\outputs\registeredlobarsegs\');
     FileName = strcat(FigureDirectory, '0509-',num2str(patientNumbers(i),'%03d'),'_registeredlobes');
     save(FileName, 'TransformedSegs');
+    
+    % Save lobar f19 segs
+    F19LobarSegs{1} = WholeLung_f19;
+    F19LobarSegs{2} = LLL_f19;
+    F19LobarSegs{3} = LUL_f19;
+    F19LobarSegs{4} = RLL_f19;
+    F19LobarSegs{5} = RML_f19;
+    F19LobarSegs{6} = RUL_f19;
+    FigureDirectory    = strcat('.\outputs\F19lobarsegs\'); 
+    FileName = strcat(FigureDirectory, '0509-',num2str(patientNumbers(i),'%03d'),'_F19_lobes');
+    save(FileName, 'F19LobarSegs');
     
 end
